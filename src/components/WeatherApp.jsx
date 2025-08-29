@@ -6,26 +6,15 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import heroImage from '@/assets/weather-hero.jpg';
 
-interface WeatherData {
-  location: string;
-  temperature: number;
-  description: string;
-  humidity: number;
-  windSpeed: number;
-  visibility: number;
-  icon: string;
-}
-
-const WeatherApp: React.FC = () => {
+const WeatherApp = () => {
   const [searchCity, setSearchCity] = useState('');
-  const [weather, setWeather] = useState<WeatherData | null>(null);
+  const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  const getWeatherData = async (city: string) => {
+  const getWeatherData = async (city) => {
     setLoading(true);
     try {
-      // First, get coordinates from city name using Open-Meteo Geocoding API
       const geocodeResponse = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
       );
@@ -37,13 +26,12 @@ const WeatherApp: React.FC = () => {
 
       const { latitude, longitude, name, country } = geocodeData.results[0];
 
-      // Get weather data using coordinates
       const weatherResponse = await fetch(
         `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&hourly=visibility&timezone=auto`
       );
       const weatherData = await weatherResponse.json();
 
-      const weatherCodeToDescription: { [key: number]: { description: string; icon: string } } = {
+      const weatherCodeToDescription = {
         0: { description: 'Clear sky', icon: '☀️' },
         1: { description: 'Mainly clear', icon: '🌤️' },
         2: { description: 'Partly cloudy', icon: '⛅' },
@@ -71,7 +59,7 @@ const WeatherApp: React.FC = () => {
         description: weatherInfo.description,
         humidity: weatherData.current.relative_humidity_2m,
         windSpeed: Math.round(weatherData.current.wind_speed_10m),
-        visibility: Math.round(weatherData.hourly.visibility[0] / 1000), // Convert to km
+        visibility: Math.round(weatherData.hourly.visibility[0] / 1000),
         icon: weatherInfo.icon,
       });
 
@@ -90,7 +78,7 @@ const WeatherApp: React.FC = () => {
     }
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e) => {
     e.preventDefault();
     if (searchCity.trim()) {
       getWeatherData(searchCity.trim());
@@ -105,17 +93,11 @@ const WeatherApp: React.FC = () => {
       <div className="absolute inset-0 bg-weather-gradient opacity-80"></div>
       <div className="relative z-10 container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto">
-          {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Weather Now
-            </h1>
-            <p className="text-lg text-white/90">
-              Get current weather conditions for any city worldwide
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Weather Now</h1>
+            <p className="text-lg text-white/90">Get current weather conditions for any city worldwide</p>
           </div>
 
-          {/* Search Form */}
           <Card className="bg-weather-card backdrop-blur-md border-white/20 shadow-weather mb-8">
             <div className="p-6">
               <form onSubmit={handleSearch} className="flex gap-4">
@@ -145,21 +127,14 @@ const WeatherApp: React.FC = () => {
             </div>
           </Card>
 
-          {/* Weather Display */}
           {weather && (
             <Card className="bg-weather-card backdrop-blur-md border-white/20 shadow-weather transition-smooth">
               <div className="p-8">
                 <div className="text-center mb-6">
                   <div className="text-6xl mb-2">{weather.icon}</div>
-                  <h2 className="text-2xl font-bold text-card-foreground mb-2">
-                    {weather.location}
-                  </h2>
-                  <div className="text-6xl font-bold text-primary mb-2">
-                    {weather.temperature}°C
-                  </div>
-                  <p className="text-xl text-muted-foreground capitalize">
-                    {weather.description}
-                  </p>
+                  <h2 className="text-2xl font-bold text-card-foreground mb-2">{weather.location}</h2>
+                  <div className="text-6xl font-bold text-primary mb-2">{weather.temperature}°C</div>
+                  <p className="text-xl text-muted-foreground capitalize">{weather.description}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -167,9 +142,7 @@ const WeatherApp: React.FC = () => {
                     <Droplets className="h-8 w-8 text-accent" />
                     <div>
                       <p className="text-sm text-muted-foreground">Humidity</p>
-                      <p className="text-xl font-semibold text-card-foreground">
-                        {weather.humidity}%
-                      </p>
+                      <p className="text-xl font-semibold text-card-foreground">{weather.humidity}%</p>
                     </div>
                   </div>
 
@@ -177,9 +150,7 @@ const WeatherApp: React.FC = () => {
                     <Wind className="h-8 w-8 text-accent" />
                     <div>
                       <p className="text-sm text-muted-foreground">Wind Speed</p>
-                      <p className="text-xl font-semibold text-card-foreground">
-                        {weather.windSpeed} km/h
-                      </p>
+                      <p className="text-xl font-semibold text-card-foreground">{weather.windSpeed} km/h</p>
                     </div>
                   </div>
 
@@ -187,9 +158,7 @@ const WeatherApp: React.FC = () => {
                     <Eye className="h-8 w-8 text-accent" />
                     <div>
                       <p className="text-sm text-muted-foreground">Visibility</p>
-                      <p className="text-xl font-semibold text-card-foreground">
-                        {weather.visibility} km
-                      </p>
+                      <p className="text-xl font-semibold text-card-foreground">{weather.visibility} km</p>
                     </div>
                   </div>
                 </div>
@@ -197,17 +166,12 @@ const WeatherApp: React.FC = () => {
             </Card>
           )}
 
-          {/* Default state */}
           {!weather && !loading && (
             <Card className="bg-weather-card backdrop-blur-md border-white/20 shadow-weather">
               <div className="p-8 text-center">
                 <Thermometer className="h-16 w-16 text-accent mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-card-foreground mb-2">
-                  Ready to Check Weather
-                </h3>
-                <p className="text-muted-foreground">
-                  Enter a city name above to get current weather conditions
-                </p>
+                <h3 className="text-xl font-semibold text-card-foreground mb-2">Ready to Check Weather</h3>
+                <p className="text-muted-foreground">Enter a city name above to get current weather conditions</p>
               </div>
             </Card>
           )}
