@@ -63,6 +63,18 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
+			backgroundImage: {
+				'weather-gradient': 'var(--weather-gradient)',
+			},
+			backgroundColor: {
+				'weather-card': 'hsl(var(--weather-card))',
+			},
+			boxShadow: {
+				'weather': '0 10px 30px -10px hsl(var(--weather-shadow))',
+			},
+			transition: {
+				'smooth': 'var(--transition-smooth)',
+			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
