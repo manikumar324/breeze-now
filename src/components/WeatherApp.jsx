@@ -78,12 +78,22 @@ const WeatherApp = () => {
     }
   };
 
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (searchCity.trim()) {
+  //     getWeatherData(searchCity.trim());
+  //   }
+  // };
+
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchCity.trim()) {
-      getWeatherData(searchCity.trim());
-    }
-  };
+  e.preventDefault();
+  const city = searchCity.trim();
+  if (city) {
+    getWeatherData(city);
+    setSearchCity(''); // <-- Clear the input
+  }
+};
+
 
   return (
     <div 
