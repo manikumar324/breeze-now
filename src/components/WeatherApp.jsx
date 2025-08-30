@@ -10,10 +10,12 @@ const WeatherApp = () => {
   const [searchCity, setSearchCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [inputError, setInputError] = useState(false);
   const { toast } = useToast();
 
   const getWeatherData = async (city) => {
     setLoading(true);
+    setInputError(false);
     try {
       const geocodeResponse = await fetch(
         `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`
@@ -67,36 +69,38 @@ const WeatherApp = () => {
         title: "Weather Updated",
         description: `Weather data for ${name} has been loaded successfully.`,
       });
+
+      // Clear input on success immediately
+      setSearchCity('');
     } catch (error) {
       toast({
         title: "Error",
         description: "Failed to fetch weather data. Please check the city name and try again.",
         variant: "destructive",
       });
+
+      setInputError(true);
+
+      // Clear input AFTER toast disappears (assuming toast duration ~3s)
+      setTimeout(() => {
+        setSearchCity('');
+        setInputError(false);
+      }, 3000);
     } finally {
       setLoading(false);
     }
   };
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   if (searchCity.trim()) {
-  //     getWeatherData(searchCity.trim());
-  //   }
-  // };
-
   const handleSearch = (e) => {
-  e.preventDefault();
-  const city = searchCity.trim();
-  if (city) {
-    getWeatherData(city);
-    setSearchCity(''); // <-- Clear the input
-  }
-};
-
+    e.preventDefault();
+    const city = searchCity.trim();
+    if (city) {
+      getWeatherData(city);
+    }
+  };
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-cover bg-center bg-no-repeat relative"
       style={{ backgroundImage: `url(${heroImage})` }}
     >
@@ -118,12 +122,12 @@ const WeatherApp = () => {
                     placeholder="Enter city name..."
                     value={searchCity}
                     onChange={(e) => setSearchCity(e.target.value)}
-                    className="pl-10 bg-background/50 border-border/50"
+                    className={`pl-10 bg-background/50 border-border/50 ${inputError ? 'text-red-500' : ''}`}
                     disabled={loading}
                   />
                 </div>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={loading || !searchCity.trim()}
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 >
